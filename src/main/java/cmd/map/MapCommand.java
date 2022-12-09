@@ -91,7 +91,7 @@ public class MapCommand extends Command {
         }
         if (loops < 1) loops = 1;
 
-        String apiKey = "AIzaSyAb3d3uMAZVM2jpDxtDi3GVF67FK7IT0eo";
+        String apiKey = "API_KEY";
         GeoApiContext ctx = new GeoApiContext.Builder().apiKey(apiKey).build();
 
         try {
