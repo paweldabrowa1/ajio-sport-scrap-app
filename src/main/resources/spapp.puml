@@ -1,0 +1,78 @@
+@startuml
+!theme reddress-darkblue
+
+class Database {
+    - connection: Connection
+}
+
+note top of Database: Klasa tzymająca połaczenie z bazą danych
+
+class DatabaseTable {
+    - db: Database
+    create()
+}
+
+note top of DatabaseTable: Klasa wymuszająca na każdej tablce\nutworzenie metody "create()" oraz\nprzekazująca klase Database
+
+Database --* DatabaseTable
+
+class PlayingField {
+    - id: Int
+    - name: String
+    - street: String?
+    - postalCode: String?
+    - city: String?
+    - geoLat: Double
+    - geoLng: Double
+    - error: String?
+    - originLine: String
+}
+
+note top of PlayingField: Klasa odzwiercająca Entity w bazie danych
+
+interface MapTableDao {
+    insertField(field: PlayingField)
+    getAll(): ArrayList<PlayingField>
+    getAllErrored(): ArrayList<PlayingField>
+}
+
+note top of MapTableDao: Interfejs udostępniający tylko niezbedne metody\ntabelki map do wykorzystania przez komendy
+
+PlayingField --* MapTableDao
+
+class MapDatabaseTable extends DatabaseTable implements MapTableDao{
+}
+
+note top of MapDatabaseTable: Klasa tabelki operującej na PlayingField\ni implementujacej MapTableDao
+
+class Main {
+    - db: Database
+    - mapTableDao: MapTableDao
+}
+
+Database --* Main
+MapTableDao --* Main
+
+class Command {
+    - name: String
+    - mapTable: MapTableDao
+    onSetup(options: Options)
+    onExecute(cmd: CommandLine)
+}
+
+note top of Command: Klasa komend. Posiada "name" uzywane do podpowiedzi\noraz uzywana przez kazda komende DAO do tabelki mapy
+
+MapTableDao --* Command
+
+class MapCommand extends Command {
+}
+class ScrapCommand extends Command {
+}
+class ListCommand extends Command {
+}
+
+note bottom of ListCommand: Wyswietla zgromadzone wpisy boisk
+note bottom of ScrapCommand: Wyciąga z plików PDF, boiska za pomocą\nprzekazanego regexa
+note bottom of MapCommand: Operuje na API Google Maps
+
+@enduml
